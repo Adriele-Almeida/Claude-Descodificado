@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guia: Criando Artefatos no Claude</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .header img {
+            width: 100%;
+            max-width: 1920px;
+            height: auto;
+            aspect-ratio: 1920 / 850;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .time-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 25px;
+            margin-top: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .section {
+            background: white;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .section-header {
+            padding: 25px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to right, #f8f9fa, #e9ecef);
+            transition: all 0.3s;
+        }
+
+        .section-header:hover {
+            background: linear-gradient(to right, #e9ecef, #dee2e6);
+        }
+
+        .section-header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .icon.completed {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .section-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .section-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-complete {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .btn-complete:hover {
+            background: #d1d5db;
+        }
+
+        .btn-complete.completed {
+            background: #10b981;
+            color: white;
+        }
+
+        .arrow {
+            font-size: 24px;
+            color: #666;
+            transition: transform 0.3s;
+        }
+
+        .arrow.rotated {
+            transform: rotate(180deg);
+        }
+
+        .section-content {
+            display: none;
+            padding: 30px;
+            border-top: 2px solid #e5e7eb;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .section-content.show {
+            display: block;
+        }
+
+        .alert {
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid;
+        }
+
+        .alert-blue {
+            background: #dbeafe;
+            border-color: #3b82f6;
+            color: #1e40af;
+        }
+
+        .alert-purple {
+            background: #f3e8ff;
+            border-color: #a855f7;
+            color: #6b21a8;
+        }
+
+        .alert-green {
+            background: #d1fae5;
+            border-color: #10b981;
+            color: #065f46;
+        }
+
+        .alert-yellow {
+            background: #fef3c7;
+            border-color: #f59e0b;
+            color: #92400e;
+        }
+
+        .alert-red {
+            background: #fee2e2;
+            border-color: #ef4444;
+            color: #991b1b;
+        }
+
+        .alert-teal {
+            background: #ccfbf1;
+            border-color: #14b8a6;
+            color: #115e59;
+        }
+
+        .screenshot-box {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .screenshot-box img {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .final-banner {
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            margin-top: 40px;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .final-banner img {
+            width: 100%;
+            max-width: 1920px;
+            height: auto;
+            aspect-ratio: 1920 / 850;
+            object-fit: cover;
+            border-radius: 15px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        ol, ul {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        strong {
+            color: #1f2937;
+        }
+
+        .example-box {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border: 2px solid #e5e7eb;
+        }
+
+        .example-box code {
+            background: #f3f4f6;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #6b21a8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="topo-claude.png" alt="Topo">
+            <p>Guia pratico com o passo a passo de como criar artefatos no Claude.</p>
+        </div>
+
+        <div class="section">
+            <div class="section-header" onclick="toggleSection('passo1')">
+                <div class="section-header-left">
+                    <div class="icon" id="icon-passo1">💬</div>
+                    <div class="section-title">Passo 1: Pedir o Artefato para o Claude</div>
+                </div>
+                <div class="section-actions">
+                    <button class="btn btn-complete" id="btn-passo1" onclick="markComplete('passo1', event)">Marcar como feito</button>
+                    <span class="arrow" id="arrow-passo1">▼</span>
+                </div>
+            </div>
+            <div class="section-content" id="content-passo1">
+                <div class="alert alert-purple">
+                    <strong style="display: block; margin-bottom: 10px;">Como fazer seu pedido:</strong>
+                    <p style="margin-bottom: 15px;">Escreva uma mensagem clara para o Claude dizendo o que voce quer. Quanto mais detalhes, melhor!</p>
+                </div>
+
+                <div class="example-box">
+                    <strong style="display: block; margin-bottom: 10px; color: #6b21a8;">Exemplo de pedido BOM:</strong>
+                    <p style="font-style: italic; color: #666;">"Crie uma landing page HTML para meu curso de marketing digital. Quero que tenha um titulo chamativo, uma secao com 3 beneficios do curso, e um botao de inscricao. Use cores vibrantes como roxo e rosa."</p>
+                </div>
+
+                <div class="example-box">
+                    <strong style="display: block; margin-bottom: 10px; color: #ef4444;">Exemplo de pedido RUIM:</strong>
+                    <p style="font-style: italic; color: #666;">"Faz um site"</p>
+                    <p style="margin-top: 10px; font-size: 0.9em;">❌ Muito vago! O Claude nao sabe o que voce quer.</p>
+                </div>
+
+                <div class="alert alert-green">
+                    <strong style="display: block; margin-bottom: 10px;">Dicas para um bom pedido:</strong>
+                    <ul>
+                        <li>Diga qual e o objetivo (landing page, portfolio, formulario...)</li>
+                        <li>Mencione as secoes que quer (titulo, beneficios, contato...)</li>
+                        <li>Se tiver preferencia de cores, mencione</li>
+                        <li>Fale sobre o publico (iniciantes, profissionais...)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header" onclick="toggleSection('passo2')">
+                <div class="section-header-left">
+                    <div class="icon" id="icon-passo2">✨</div>
+                    <div class="section-title">Passo 2: Claude Cria o Artefato</div>
+                </div>
+                <div class="section-actions">
+                    <button class="btn btn-complete" id="btn-passo2" onclick="markComplete('passo2', event)">Marcar como feito</button>
+                    <span class="arrow" id="arrow-passo2">▼</span>
+                </div>
+            </div>
+            <div class="section-content" id="content-passo2">
+                <div class="alert alert-blue">
+                    <strong style="display: block; margin-bottom: 10px;">O que vai acontecer:</strong>
+                    <ol>
+                        <li>O Claude vai processar seu pedido</li>
+                        <li>Uma janela vai aparecer DO LADO da conversa (no desktop) ou abaixo (no celular)</li>
+                        <li>Voce vai ver seu site/codigo funcionando na janela do artefato</li>
+                        <li>O artefato tera um titulo em cima</li>
+                    </ol>
+                </div>
+
+                <div class="alert alert-purple">
+                    <strong style="display: block; margin-bottom: 10px;">Nao gostou do resultado?</strong>
+                    <p>Sem problema! Voce pode pedir mudancas:</p>
+                    <ul style="margin-top: 10px;">
+                        <li>"Mude a cor do botao para verde"</li>
+                        <li>"Adicione uma secao de depoimentos"</li>
+                        <li>"Deixe o titulo maior"</li>
+                        <li>"Coloque uma imagem de fundo"</li>
+                    </ul>
+                    <p style="margin-top: 10px;"><strong>O Claude vai atualizar o MESMO artefato</strong>, nao criar um novo!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header" onclick="toggleSection('passo3')">
+                <div class="section-header-left">
+                    <div class="icon" id="icon-passo3">📋</div>
+                    <div class="section-title">Passo 3: Copiar o Codigo do Artefato</div>
+                </div>
+                <div class="section-actions">
+                    <button class="btn btn-complete" id="btn-passo3" onclick="markComplete('passo3', event)">Marcar como feito</button>
+                    <span class="arrow" id="arrow-passo3">▼</span>
+                </div>
+            </div>
+            <div class="section-content" id="content-passo3">
+                <div class="alert alert-purple">
+                    <strong style="display: block; margin-bottom: 15px;">Como copiar o codigo:</strong>
+                    <ol>
+                        <li>Olhe para a janela do artefato (lado direito no desktop)</li>
+                        <li>No canto superior direito do artefato, procure o <strong>icone de "Copiar"</strong> (geralmente dois quadradinhos sobrepostos)</li>
+                        <li>Clique no icone de copiar</li>
+                        <li>Pronto! O codigo completo foi copiado</li>
+                    </ol>
+                </div>
+
+                <div class="alert alert-yellow">
+                    <strong>Atencao:</strong>
+                    <p style="margin-top: 10px;">Certifique-se de copiar do ARTEFATO (janela lateral), nao da conversa. O codigo do artefato e o completo!</p>
+                </div>
+
+                <div class="alert alert-teal">
+                    <strong style="display: block; margin-bottom: 10px;">Opcao alternativa:</strong>
+                    <p>Se nao conseguir copiar do artefato, voce pode pedir:</p>
+                    <p style="font-style: italic; margin-top: 10px; color: #115e59;">"Me mostre o codigo completo em um bloco de texto"</p>
+                    <p style="margin-top: 10px;">O Claude vai mostrar o codigo em um bloco que voce pode copiar normalmente.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header" onclick="toggleSection('passo4')">
+                <div class="section-header-left">
+                    <div class="icon" id="icon-passo4">💾</div>
+                    <div class="section-title">Passo 4: Salvar como Arquivo HTML</div>
+                </div>
+                <div class="section-actions">
+                    <button class="btn btn-complete" id="btn-passo4" onclick="markComplete('passo4', event)">Marcar como feito</button>
+                    <span class="arrow" id="arrow-passo4">▼</span>
+                </div>
+            </div>
+            <div class="section-content" id="content-passo4">
+                <div class="alert alert-purple">
+                    <strong style="display: block; margin-bottom: 15px;">Agora vamos transformar em arquivo:</strong>
+                    <ol>
+                        <li>Abra o <strong>Bloco de Notas</strong> (Windows) ou <strong>TextEdit</strong> (Mac)</li>
+                        <li>Cole o codigo que voce copiou (<strong>Ctrl+V</strong> no Windows ou <strong>Cmd+V</strong> no Mac)</li>
+                        <li>Clique em <strong>"Arquivo"</strong> no menu</li>
+                        <li>Clique em <strong>"Salvar Como"</strong></li>
+                        <li>Escolha onde salvar (exemplo: Area de Trabalho)</li>
+                        <li>No campo "Nome do arquivo", digite: <code>meuprojeto.html</code></li>
+                        <li>Em "Tipo" ou "Salvar como tipo", escolha <strong>"Todos os arquivos"</strong></li>
+                        <li>Clique em <strong>"Salvar"</strong></li>
+                    </ol>
+                </div>
+
+                <div class="alert alert-red">
+                    <strong>MUITO IMPORTANTE:</strong>
+                    <p style="margin-top: 10px;">O arquivo PRECISA terminar com <code>.html</code> - Exemplo: <code>index.html</code>, <code>meuprojeto.html</code>, <code>landingpage.html</code></p>
+                    <p style="margin-top: 10px;">Se voce salvar como <code>.txt</code>, nao vai funcionar!</p>
+                </div>
+
+                <div class="example-box">
+                    <strong style="display: block; margin-bottom: 10px; color: #6b21a8;">Bons nomes de arquivo:</strong>
+                    <ul style="margin-top: 10px;">
+                        <li><code>index.html</code> ✅</li>
+                        <li><code>meu-site.html</code> ✅</li>
+                        <li><code>landing-page.html</code> ✅</li>
+                        <li><code>portfolio.html</code> ✅</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header" onclick="toggleSection('dicas')">
+                <div class="section-header-left">
+                    <div class="icon" id="icon-dicas">💡</div>
+                    <div class="section-title">Dicas Extras e Erros Comuns</div>
+                </div>
+                <div class="section-actions">
+                    <span class="arrow" id="arrow-dicas">▼</span>
+                </div>
+            </div>
+            <div class="section-content" id="content-dicas">
+                <div class="alert alert-green">
+                    <strong style="display: block; margin-bottom: 10px;">✅ Dicas de ouro:</strong>
+                    <ul>
+                        <li><strong>Sempre copie TODO o codigo</strong> - do inicio ao fim</li>
+                        <li><strong>Use nomes descritivos</strong> - em vez de "arquivo.html", use "landing-page-curso.html"</li>
+                        <li><strong>Teste antes de publicar</strong> - abra no navegador e veja se tudo funciona</li>
+                        <li><strong>Faca backup</strong> - salve uma copia do arquivo antes de fazer mudancas</li>
+                        <li><strong>Organize seus projetos</strong> - crie pastas separadas para cada projeto</li>
+                    </ul>
+                </div>
+
+                <div class="alert alert-red">
+                    <strong style="display: block; margin-bottom: 10px;">❌ Erros mais comuns:</strong>
+                    <ul>
+                        <li><strong>Salvar com extensao errada</strong> - Tem que ser <code>.html</code>, nao <code>.txt</code></li>
+                        <li><strong>Nao copiar o codigo completo</strong> - Sempre role ate o final do codigo</li>
+                        <li><strong>Acentos aparecendo errado</strong> - Certifique-se que o codigo tem <code>&lt;meta charset="UTF-8"&gt;</code></li>
+                        <li><strong>Codigo nao copiou</strong> - Tente copiar novamente ou pecra ao Claude para mostrar o codigo</li>
+                    </ul>
+                </div>
+
+                <div class="alert alert-yellow">
+                    <strong style="display: block; margin-bottom: 10px;">⚠️ Se algo nao funcionar:</strong>
+                    <ol>
+                        <li>Volte no Claude e diga: "O codigo nao esta funcionando, o que pode ser?"</li>
+                        <li>Descreva o problema que esta acontecendo</li>
+                        <li>O Claude vai te ajudar a corrigir</li>
+                    </ol>
+                </div>
+
+                <div class="alert alert-teal">
+                    <strong style="display: block; margin-bottom: 10px;">🚀 Proximo passo:</strong>
+                    <p>Agora que voce tem seu arquivo <code>index.html</code> pronto, use o guia <strong>"Do Codigo ao GitHub"</strong> para publicar seu site na internet!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="final-banner">
+            <img src="rodape-claude.png" alt="Rodape">
+        </div>
+    </div>
+
+    <script>
+        var completedSteps = {};
+
+        function toggleSection(id) {
+            var content = document.getElementById('content-' + id);
+            var arrow = document.getElementById('arrow-' + id);
+            
+            if (content.classList.contains('show')) {
+                content.classList.remove('show');
+                arrow.classList.remove('rotated');
+            } else {
+                content.classList.add('show');
+                arrow.classList.add('rotated');
+            }
+        }
+
+        function markComplete(step, event) {
+            event.stopPropagation();
+            var btn = document.getElementById('btn-' + step);
+            var icon = document.getElementById('icon-' + step);
+            
+            if (completedSteps[step]) {
+                completedSteps[step] = false;
+                btn.classList.remove('completed');
+                btn.textContent = 'Marcar como feito';
+                icon.classList.remove('completed');
+                icon.textContent = getOriginalIcon(step);
+            } else {
+                completedSteps[step] = true;
+                btn.classList.add('completed');
+                btn.textContent = 'Feito';
+                icon.classList.add('completed');
+                icon.textContent = '✓';
+            }
+        }
+
+        function getOriginalIcon(step) {
+            var icons = {
+                'passo1': '💬',
+                'passo2': '✨',
+                'passo3': '📋',
+                'passo4': '💾',
+                'passo5': '🌐'
+            };
+            return icons[step];
+        }
+    </script>
+</body>
+</html>
